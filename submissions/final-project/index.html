@@ -1,9 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Document</title>
-    </head>
-    <body></body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Manager</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Add New Account</h2>
+        <form action="/add_password" method="post">
+            <label for="website">Website:</label>
+            <input type="text" id="website" name="website" required>
+            
+            <label for="email">Email:</label> 
+            <input type="text" id="email" name="email" required> 
+            
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            
+            <input type="submit" value="Submit">
+        </form>
+
+        <!-- Display passwords in a table -->
+        <table>
+            <tr>
+                <th>Website</th>
+                <th>Email</th>
+                <th>Password</th>
+                <th>Actions</th>
+            </tr>
+            {% for password in passwords %}
+            <tr>
+                <td>{{ password[1] }}</td> 
+                <td>{{ password[2] }}</td> 
+                <td>{{ password[3] }}</td> 
+                <td>
+                    <form action="/delete_password/{{ password[0] }}" method="post">
+                        <button type="submit">Delete</button>
+                    </form>
+                    <form action="/update_password/{{ password[0] }}" method="get">
+                        <button type="submit">Update</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
 </html>
