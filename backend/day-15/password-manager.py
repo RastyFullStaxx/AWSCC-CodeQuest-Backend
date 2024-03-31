@@ -2,47 +2,37 @@ import json
 import os
 
 def print_menu():
-    menu = ["1 - Add Username and Password",
-            "2 - View",
-            "3 - Search",
-            "4 - Delete",
-            "5 - Update",
+    menu = ["1 - Add Username, Email, and Password for a Website",
+            "2 - View all inputs",
+            "3 - Search for a specific input",
+            "4 - Delete an existing input",
+            "5 - Update a specific input",
             "6 - Exit"]
     
-    for i in menu:
-        print(i)
+    for item in menu:
+        print(item)
 
-def check_input(_input):
-    global running
-
-    if _input == "1":
+def check_input(choice):
+    if choice == "1":
         add()
-    elif _input == "2":
+    elif choice == "2":
         view()
-    elif _input == "3":
+    elif choice == "3":
         website = input("Enter website: ")
         search(website)
-    elif _input == "4":
-        existing = False
-        while not existing:
-            website = input("Enter website: ")
-            existing = is_existing(website)
+    elif choice == "4":
+        website = input("Enter website: ")
         delete(website)
-    elif _input == "5":
-        existing = False
-        while not existing:
-            website = input("Enter website: ")
-            existing = is_existing(website)
+    elif choice == "5":
+        website = input("Enter website: ")
         update(website)
-    elif _input == "6":
-        running = False
+    elif choice == "6":
+        exit()
 
 def is_existing(website):
     with open('data.json', 'r') as f:
         data = json.load(f)
-        if website in data:
-            return True
-        return False
+        return website in data
 
 def add():
     website = input("Enter website: ")
@@ -76,67 +66,49 @@ def view():
         data = json.load(f)
         for key, val in data.items():
             print(f"Website: {key}")
-            for i in range(len(val)):
-                print(f"    Email: {val[i]['email']}")
-                print(f"    Password: {val[i]['password']}\n")
+            for item in val:
+                print(f"    Email: {item['email']}")
+                print(f"    Password: {item['password']}\n")
 
 def search(website):
     with open('data.json', 'r') as f:
         data = json.load(f)
-        for key, val in data.items():
-            if key == website:
-                print(f"Website: {key}")
-                for i in range(len(val)):
-                    print(f"    {i+1} Email: {val[i]['email']}")
-                    print(f"      Password: {val[i]['password']}\n")
-                return True
-            
-        print("No websites found.")
-        return 
-    
+        if website in data:
+            print(f"Website: {website}")
+            for item in data[website]:
+                print(f"    Email: {item['email']}")
+                print(f"    Password: {item['password']}\n")
+        else:
+            print("No entries found for this website.")
+
 def delete(website):
     with open('data.json', 'r') as f:
         data = json.load(f)
-        search(website)
-
-        valid_idx = False
-        while not valid_idx:
-            num = int(input("Enter the number you want to delete: "))
-            valid_idx = 0 <= num-1 < len(data[website])
-    
-        data[website].pop(num-1)
-
-        if len(data[website]) == 0:
-            data.pop(website)
-
-    with open('data.json', 'w') as f:
-        json.dump(data, f, indent=4)
-
-    print("Successfully removed.")
+        if website in data:
+            del data[website]
+            with open('data.json', 'w') as file:
+                json.dump(data, file, indent=4)
+            print("Entry deleted successfully.")
+        else:
+            print("No entries found for this website.")
 
 def update(website):
     with open('data.json', 'r') as f:
         data = json.load(f)
-        search(website)
-
-        valid_idx = False
-        while not valid_idx:
-            num = int(input("Enter the number you want to update: "))
-            valid_idx = 0 <= num-1 < len(data[website])
-
-        to_update = input("'email' or 'password': ").lower()
-        new_val = input(f"Enter your new {to_update}: ")
-        data[website][num-1][to_update] = new_val
-
-    with open('data.json', 'w') as f:
-        json.dump(data, f, indent=4)
-
-    print("Successfully updated!")
+        if website in data:
+            email = input("Enter new email: ")
+            password = input("Enter new password: ")
+            data[website] = [{'email': email, 'password': password}]
+            with open('data.json', 'w') as file:
+                json.dump(data, file, indent=4)
+            print("Entry updated successfully.")
+        else:
+            print("No entries found for this website.")
 
 running = True
 
 while running:
-    print("=======PASSWORD MANAGER=======")
+    print("======= PASSWORD MANAGER =======")
     print_menu()
     user_input = input("Enter a number: ")
     check_input(user_input)
