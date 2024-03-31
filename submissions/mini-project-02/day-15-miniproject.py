@@ -1,3 +1,6 @@
+# Rasty Espartero | BSCS 2-4 | Backend Department
+# Day 15 Entry
+
 import json
 import os
 
